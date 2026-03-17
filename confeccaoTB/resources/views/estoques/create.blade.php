@@ -19,7 +19,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('estoque.store') }}" method="POST">
+                <form action="{{ route('estoques.store') }}" method="POST">
                     @csrf
                     <div class="mb-4">
                         <label class="block font-bold">produto_id</label>
@@ -30,7 +30,7 @@
 
                     <div class="mb-4">
                         <label class="block font-bold">quantidade</label>
-                        <input type="int" name="quantidade"
+                        <input type="number" name="quantidade"
                                class="w-full border rounded p-2"
                                value="{{ old('quantidade') }}">
                     </div>

@@ -10,13 +10,13 @@ class EstoqueController extends Controller
     public function index()
     {
         $estoques = Estoque::all();
-        return view('estoque.index', compact('estoques'));
+        return view('estoques.index', compact('estoques'));
     }
 
     // Exibir formulário de criação
     public function create()
     {
-        return view('estoque.create');
+        return view('estoques.create');
     }
 
     public function store(Request $request)
@@ -29,13 +29,13 @@ class EstoqueController extends Controller
 
         Estoque::create($request->all());
 
-        return redirect()->route('estoque.index')->with('success', 'Estoque criado com sucesso!');
+        return redirect()->route('estoques.index')->with('success', 'Estoque criado com sucesso!');
     }
 
     // Abre a tela de edição
     public function edit(Estoque $estoque)
     {
-        return view('estoque.edit', compact('estoque'));
+        return view('estoques.edit', compact('estoque'));
     }
 
     // Atualizar os dados do estoque no banco de dados
@@ -48,14 +48,14 @@ class EstoqueController extends Controller
         ]);
 
         $estoque->update($request->all());
-        return redirect()->route('estoque.index')->with('success', 'Estoque atualizado com sucesso!');
+        return redirect()->route('estoques.index')->with('success', 'Estoque atualizado com sucesso!');
     }
 
     // Deletar os dados do estoque no banco de dados
     public function destroy(Estoque $estoque)
     {
         $estoque->delete();
-        return redirect()->route('estoque.index')->with('success', 'Estoque removido!');
+        return redirect()->route('estoques.index')->with('success', 'Estoque removido!');
     }
 }
 
