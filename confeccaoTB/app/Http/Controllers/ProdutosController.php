@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Produto;
 use App\Models\Fornecedor;
 
-class ProdutosController extends Controller
+class ProdutoController extends Controller
 {
     public function index()
     {

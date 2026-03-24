@@ -17,7 +17,7 @@ class PedidosFactory extends Factory
     public function definition(): array
     {
         return [
-             'produto_id' => \App\Models\Produtos::factory(),
+             'produto_id' => \App\Models\Produto::factory(),
             'quantidade' => $this->faker->numberBetween(1, 50),
             'data_pedido' => $this->faker->date(),
             'status' => $this->faker->randomElement(['Pendente', 'Concluído', 'Cancelado']),

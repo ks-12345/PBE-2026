@@ -5,7 +5,7 @@ use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\FornecedoresController;
 use App\Http\Controllers\EstoqueController;
 use App\Http\Controllers\PedidosController;
-use App\Http\Controllers\ProdutosController;
+use App\Http\Controllers\ProdutoController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -44,8 +44,8 @@ Route::resource('estoques', EstoqueController::class);
 Route::resource('pedidos', PedidosController::class);
 
 // ---------------------------------------------------------------------------------
-// Produtos
+// Produto
 // ---------------------------------------------------------------------------------
-Route::resource('produtos', ProdutosController::class);
+Route::resource('produtos', ProdutoController::class);
 
 require __DIR__.'/auth.php';

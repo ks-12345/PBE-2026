@@ -1,11 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Produtos
+            Produto
         </h2>
          <a href="{{ route('produtos.create') }}" 
            class="inline-block bg-blue-500 hover:bg-blue-600 text-white font-semibold px-5 py-2 rounded-lg shadow transition">
-            + Novo Produtos
+            + Novo Produto
         </a>
         
     </x-slot>
