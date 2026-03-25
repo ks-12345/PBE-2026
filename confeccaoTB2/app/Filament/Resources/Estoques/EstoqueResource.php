@@ -6,15 +6,19 @@ use App\Filament\Resources\Estoques\Pages\CreateEstoque;
 use App\Filament\Resources\Estoques\Pages\EditEstoque;
 use App\Filament\Resources\Estoques\Pages\ListEstoques;
 use App\Filament\Resources\Estoques\Pages\ViewEstoque;
-use App\Filament\Resources\Estoques\Schemas\EstoqueForm;
-use App\Filament\Resources\Estoques\Schemas\EstoqueInfolist;
-use App\Filament\Resources\Estoques\Tables\EstoquesTable;
 use App\Models\Estoque;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Repeater;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 
 class EstoqueResource extends Resource
 {
@@ -26,17 +30,55 @@ class EstoqueResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return EstoqueForm::configure($schema);
-    }
+        return $schema->schema([
+            
+            TextInput::make('nome')
+                ->required()
+                ->label('Nome do Estoque'),
 
-    public static function infolist(Schema $schema): Schema
-    {
-        return EstoqueInfolist::configure($schema);
+            Repeater::make('produtos')
+                ->relationship('produtos')
+                ->schema([
+                    Select::make('produto_id')
+                        ->relationship('produto', 'nome')
+                        ->searchable()
+                        ->preload()
+                        ->required()
+                        ->label('Produto')
+                        ->columnSpan(2),
+
+                    TextInput::make('quantidade')
+                        ->numeric()
+                        ->required()
+                        ->label('Quantidade')
+                        ->columnSpan(1),
+                ])
+                ->columnSpanFull()
+                ->label('Produtos no Estoque'),
+        ]);
     }
 
     public static function table(Table $table): Table
     {
-        return EstoquesTable::configure($table);
+        return $table->columns([
+            TextColumn::make('nome')
+                ->label('Estoque')
+                ->searchable()
+                ->sortable(),
+
+            TextColumn::make('produtos_count')
+                ->counts('produtos')
+                ->label('Qtd. Produtos'),
+
+            TextColumn::make('created_at')
+                ->label('Criado em')
+                ->dateTime('d/m/Y H:i')
+                ->sortable(),
+        ])
+        ->recordActions([
+            ViewAction::make(),
+            EditAction::make(),
+        ]);
     }
 
     public static function getRelations(): array
