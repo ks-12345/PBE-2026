@@ -71,7 +71,18 @@ class PedidoResource extends Resource
             ->numeric()
             ->default(1)
             ->required()
+            ->live(onBlur: true)
+            ->afterStateUpdate(fn(Get $get, Set $set) => self:CalcularTotal($get, $set))
             ->columnSpan(1),
+        
+
+        TextInput::make('preco_unitario')
+        ->numeric()
+        ->prefix('R$')
+        ->required()
+        ->afterStateUpdate(fn(Get $get, Set $set) => self:CalcularTotal($get, $set))
+        ->columnSpan(1),
+
         ])
 
         ->columnSpan(2)
