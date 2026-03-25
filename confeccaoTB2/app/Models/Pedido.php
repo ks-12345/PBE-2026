@@ -8,7 +8,7 @@ class Pedido extends Model
 {
     protected $guarded = [];
 
-    public function Clientes()
+    public function cliente()
     {
         return $this->belongsTo(Cliente::class);
     }

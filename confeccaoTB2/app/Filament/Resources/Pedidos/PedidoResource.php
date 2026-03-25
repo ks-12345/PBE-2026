@@ -19,78 +19,37 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Repeater;
 use Filament\Tables\Columns\TextColumn;
-use Illuminate\Testing\TestView;
-
-use function Symfony\Component\Translation\t;
-
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 class PedidoResource extends Resource
 {
     protected static ?string $model = Pedido::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'Pedido';
+    protected static ?string $recordTitleAttribute = 'Pedidos';
 
     public static function form(Schema $schema): Schema
     {
-        // return PedidoForm::configure($schema);
-        return $schema
-        ->schema([
-            Select::make('cliente_id')
-            ->relationship('Clientes', 'nome')
-            ->searchable()
-            ->preload()
-            ->required()
-            ->label('Selecionar Cliente'),
-
-            Select::make('status')
-            ->options([
-                'Pendente' => 'Pendente',
-                'Em Produção' => 'Em Produção',
-                'Finalizado' => 'Finalizado',
-        ])
-        ->default('Pendente')
-        ->required(),
-
-        TextInput::make('valor_total')
-        ->numeric()
-        ->prefix('R$'),
-
-        Repeater::make('itens')
-        ->relationship('itens')
-        ->schema([
-            Select::make('produto_id')
-            ->relationship('produto', 'nome')
-            ->searchable()
-            ->preload()
-            ->required()
-            ->label('Produto')
-            ->columnSpan(2),
-
-            TextInput::make('quantidade')
-            ->numeric()
-            ->default(1)
-            ->required()
-            ->live(onBlur: true)
-            ->afterStateUpdate(fn(Get $get, Set $set) => self:CalcularTotal($get, $set))
-            ->columnSpan(1),
-        
-
-        TextInput::make('preco_unitario')
-        ->numeric()
-        ->prefix('R$')
-        ->required()
-        ->afterStateUpdate(fn(Get $get, Set $set) => self:CalcularTotal($get, $set))
-        ->columnSpan(1),
-
-        ])
-
-        ->columnSpan(2)
-        ->columnSpanFull()
-        ->label('Produtos do Pedido'),
-
-
-        ]);
+        return $schema->schema(
+            [
+                Select::make('cliente_id')->relationship('cliente','nome')->searchable()->preload()->required()->label('Selecione o Cliente'),
+                Select::make('status')->options([
+                    "Pendente" => "Pendente",
+                    "Em Produção" => "Em Produção",
+                    "Para Entrega" => "Para Entrega",
+                    "Finalizado" => "Finalizado"
+                ])->default("Pendente")->required(),
+                TextInput::make('valor_total')->numeric()->prefix("R$")->readOnly()->label("Valor Total"),
+                Repeater::make('itens')->relationship('itens')->schema([
+                    Select::make('produto_id')->relationship('produto','nome')->searchable()->preload()->required()->label("Produto")->columnSpan(2),
+                    TextInput::make('quantidade')->numeric()->default(1)->required()->columnSpan(1)->live(onBlur:true)->afterStateUpdated(fn(Get $get, Set $set) => self::CalcularTotal($get,$set)),
+                    TextInput::make('preco_unitario')->numeric()->prefix("R$")->required()->columnSpan(1)
+                ])->columnSpan(4)->columnSpanFull()->label('Produtos do Pedido')->live()->afterStateUpdated(fn(Get $get, Set $set) => self::CalcularTotal($get,$set))
+            ]
+        );
     }
 
     public static function infolist(Schema $schema): Schema
@@ -100,31 +59,20 @@ class PedidoResource extends Resource
 
     public static function table(Table $table): Table
     {
-        // return PedidosTable::configure($table);
-            return $table
-            ->columns([
-                TextColumn::make('cliente.nome')
-                ->label('Cliente')
-                ->searchable()
-                ->sortable(),
-
-                TextColumn::make('status')
-                ->badge()
-                ->colors(fn ($state): string => match ($state) {
-                    'Pendente' => 'warning',
-                    'Em Produção' => 'primary',
-                    'Finalizado' => 'success',
-                    default => 'gray',
+        return $table->columns([
+            TextColumn::make("cliente.nome")->label("Cliente")->searchable()->sortable(),
+            TextColumn::make("status")->badge()->color(fn (string $state) : string => match($state) {
+                "Pendente" => "warning",
+                "Para Entrega" => "success",
+                "Em Produção" => "info",
+                "Finalizado" => "success",
+                default => 'gray'
             }),
-                TextColumn::make('valor_total')
-                ->label('Valor Total')
-                ->money('BRL')
-                ->sortable(),
-
-                textColumn::make('created_at')
-                ->label('Data do Pedido')
-                ->dataTime('d/m/Y H:i')
-                ->sortable(),
+            TextColumn::make("valor_total")->label("Valor Total")->money("BRL")->sortable(),
+            TextColumn::make("created_at")->label("Data do Pedido")->dateTime("d/m/Y H:i")->sortable()
+        ])->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
             ]);
     }
 
@@ -143,5 +91,20 @@ class PedidoResource extends Resource
             'view' => ViewPedido::route('/{record}'),
             'edit' => EditPedido::route('/{record}/edit'),
         ];
+    }
+
+    public static function calcularTotal(Get $get, Set $set) {
+        $itens = $get('itens') ?? [];
+
+        $total = 0;
+
+        foreach($itens as $item) {
+            $quantidade = (float) ($item['quantidade']) ?? 0;
+            $preco = (float) ($item['preco_unitario']) ?? 0;
+
+            $total += ($quantidade * $preco);
+        }
+
+        $set('valor_total', number_format($total,2, '.', ''));
     }
 }
