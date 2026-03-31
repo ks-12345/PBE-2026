@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('estoque_produtos', function (Blueprint $table) {
             $table->id();
-                $table->foreignId('estoque_id')->constrained('estoques')->cascadeOnDelete();
-    $table->foreignId('produto_id')->constrained()->cascadeOnDelete();
-    $table->integer('quantidade');
+            $table->foreignId('estoque_id')->constrained('estoques')->cascadeOnDelete();
+            $table->foreignId('produto_id')->constrained('produtos')->cascadeOnDelete();
+            $table->integer('quantidade');
             $table->timestamps();
         });
     }

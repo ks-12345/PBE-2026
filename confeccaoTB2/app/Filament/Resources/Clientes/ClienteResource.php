@@ -13,7 +13,6 @@ use App\Models\Cliente;
 use BackedEnum;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Support\RawJs;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -25,19 +24,16 @@ class ClienteResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'Cliente';
+    protected static ?string $recordTitleAttribute = 'nome';
 
     public static function form(Schema $schema): Schema
     {
-        // return ClienteForm::configure($schema);
         return $schema
             ->schema([
-                TextInput::make('nome')->required()->label('nome'),
-                TextInput::make('email')->email()->label('email'),
-                TextInput::make('telefone')->label('telefone')->mask('(99) 99999-9999'),
-                TextInput::make('endereco')->label('endereco')->mask(RawJs::make(<<<'JS'
-                $input.legth > 14 ? '99999-9999' : '99999-999'
-                JS)),
+                TextInput::make('nome')->required()->label('Nome'),
+                TextInput::make('email')->email()->label('E-mail'),
+                TextInput::make('telefone')->label('Telefone')->mask('(99) 99999-9999'),
+                TextInput::make('endereco')->label('Endereço'),
             ]);
     }
 
@@ -48,7 +44,6 @@ class ClienteResource extends Resource
 
     public static function table(Table $table): Table
     {
-        // return ClientesTable::configure($table);
         return $table
             ->columns([
                 TextColumn::make('nome')->searchable(),
