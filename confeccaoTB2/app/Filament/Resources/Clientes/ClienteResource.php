@@ -30,10 +30,17 @@ class ClienteResource extends Resource
     {
         return $schema
             ->schema([
+<<<<<<< HEAD
                 TextInput::make('nome')->required()->label('Nome'),
                 TextInput::make('email')->email()->label('E-mail'),
                 TextInput::make('telefone')->label('Telefone')->mask('(99) 99999-9999'),
                 TextInput::make('endereco')->label('Endereço'),
+=======
+                TextInput::make('nome')->required()->label('nome'),
+                TextInput::make('email')->email()->label('email'),
+                TextInput::make('telefone')->label('telefone')->mask('(99) 99999-9999'),
+                TextInput::make('endereco')->label('endereco'),
+>>>>>>> 5f54b34fedc523717f40e35a62a33d9cc716c1d4
             ]);
     }
 
