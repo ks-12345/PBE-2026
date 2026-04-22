@@ -4,15 +4,15 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 
-Route::get('user/{ID}', function ($ID) {
-    $response =Http::get("https://dummyjson.com/user/{$ID}");
+Route::get('user/{ID}', function ($id) {
+    $response =Http::get("https://dummyjson.com/user/{$id}");
     if ($response->successful()) {
         $dados = $response->json();
         return response()->json([
             'status' => 'Conectado com sucesso',
             'resultado'=> [ 
             'identificador' => $dados['id'],
-            'nome_do_usuario' => ucfirst($dados['ID'])            
+            'id_usuario' => $dados['id']       
             ]
         ]);
     }
@@ -23,7 +23,7 @@ Route::post ('usuario/novo', function(Request $request) {
     $dados = $request->validate ([
         'firstName' => 'required|string|min:3',
         'lastName' => 'required|string|min:3',
-        'age' => 'required|integer|max:2',
+        'age' => 'required|integer|max:120',
         'gender' => 'required|string|min:3',
         'city' => 'required|string|min:3',
     ]);
