@@ -1,8 +1,13 @@
 <?php
 
+use App\Http\Controllers\MarvelController;
+use App\Http\Controllers\PokemonController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
+
+Route::get('pokedex', [PokemonController::class, 'index']);
+Route::get('paises', [MarvelController::class, 'index']);
 
 Route::get('pokemon/{nome}', function ($nome) {
     $response =Http::get("https://pokeapi.co/api/v2/pokemon/{$nome}");

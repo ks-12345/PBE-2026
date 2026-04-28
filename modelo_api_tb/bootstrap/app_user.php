@@ -12,7 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->validateCsrfTokens(except:[
-            'pokemon/novo',
+            'usuario/novo',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
