@@ -9,3 +9,5 @@ Route::get('/', function () {
 
 
 Route::resource('pokemons', PokemonController::class);
+
+Route::get('/booster', [PokemonController::class, 'booster']);
