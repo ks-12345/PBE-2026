@@ -528,7 +528,7 @@ if (!$imagemPath) {
             src="{{ $imagemUrl }}"
             alt="{{ $pokemon->nome }}"
             class="{{ $imagemFallback ? 'fallback-image' : '' }}"
-            onerror="this.onerror=null;this.src='{{ asset('img/pack.png') }}';this.classList.add('fallback-image');"
+            onerror="this.onerror=null;this.src='{{ asset("img/pack.png") }}';this.classList.add('fallback-image');"
         >
     </div>
 
