@@ -4,6 +4,7 @@ namespace App\Services;
  
 use App\Models\Ocorrencia;
 use App\Models\User;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
  
@@ -19,10 +20,17 @@ class OcorrenciaService
     public function registrar(array $dados): Ocorrencia
     {
         return DB::transaction(function () use ($dados) {
+            $horario = $dados['horario'];
+            unset($dados['horario']);
+
+            $teraFalta = filter_var($dados['tera_falta'], FILTER_VALIDATE_BOOLEAN);
+            $dados['tera_falta'] = $teraFalta;
+            $dados['aulas_falta'] = $teraFalta ? $dados['aulas_falta'] : null;
+
             $ocorrencia = Ocorrencia::create([
                 ...$dados,
                 'aqv_id'           => Auth::id(),
-                'data_ocorrencia'  => now(),
+                'data_ocorrencia'  => Carbon::today()->setTimeFromTimeString($horario),
                 'status'           => 'pendente',
             ]);
  
@@ -53,15 +61,16 @@ class OcorrenciaService
                 );
             }
  
-            // Notifica professores
-            /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $professores */
-            $professores = User::where('role', 'professor')->get();
-            foreach ($professores as $professor) {
+            if ($ocorrencia->professor) {
+                $falta = $ocorrencia->tera_falta
+                    ? "O aluno terá falta em {$ocorrencia->aulas_falta} aula(s)."
+                    : 'O aluno não terá falta registrada.';
+
                 $this->notificacaoService->enviar(
                     ocorrencia: $ocorrencia,
-                    usuario: $professor,
+                    usuario: $ocorrencia->professor,
                     titulo: "Aluno com {$ocorrencia->tipoLabel()}: {$ocorrencia->aluno->nome}",
-                    mensagem: "O aluno {$ocorrencia->aluno->nome} (Turma: {$ocorrencia->aluno->turma}) teve {$ocorrencia->tipoLabel()} autorizada. Motivo: {$ocorrencia->motivo}"
+                    mensagem: "O aluno {$ocorrencia->aluno->nome} (Turma: {$ocorrencia->aluno->turma}) teve {$ocorrencia->tipoLabel()} autorizada. {$falta} Motivo: {$ocorrencia->motivo}"
                 );
             }
         });

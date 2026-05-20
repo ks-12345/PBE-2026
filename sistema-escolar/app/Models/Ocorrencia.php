@@ -15,9 +15,12 @@ class Ocorrencia extends Model
     protected $fillable = [
         'aluno_id',
         'aqv_id',
+        'professor_id',
         'tipo',
         'motivo',
         'status',
+        'tera_falta',
+        'aulas_falta',
         'data_ocorrencia',
         'data_autorizacao',
         'confirmacao_portaria',
@@ -29,6 +32,7 @@ class Ocorrencia extends Model
         'data_ocorrencia'    => 'datetime',
         'data_autorizacao'   => 'datetime',
         'confirmacao_portaria' => 'datetime',
+        'tera_falta' => 'boolean',
     ];
  
     // Relacionamentos
@@ -45,6 +49,11 @@ class Ocorrencia extends Model
     public function portaria()
     {
         return $this->belongsTo(User::class, 'portaria_id');
+    }
+
+    public function professor()
+    {
+        return $this->belongsTo(User::class, 'professor_id');
     }
  
     public function notificacoes()

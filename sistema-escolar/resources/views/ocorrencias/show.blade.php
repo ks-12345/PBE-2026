@@ -63,6 +63,20 @@
                     <p class="text-xs uppercase tracking-wide text-gray-500">Registrada por</p>
                     <p class="mt-2 text-sm font-semibold text-slate-900">{{ $ocorrencia->aqv?->name ?? '—' }}</p>
                 </div>
+                <div class="rounded-xl bg-slate-50 p-4">
+                    <p class="text-xs uppercase tracking-wide text-gray-500">Professor notificado</p>
+                    <p class="mt-2 text-sm font-semibold text-slate-900">{{ $ocorrencia->professor?->name ?? '—' }}</p>
+                </div>
+                <div class="rounded-xl bg-slate-50 p-4">
+                    <p class="text-xs uppercase tracking-wide text-gray-500">Falta</p>
+                    <p class="mt-2 text-sm font-semibold text-slate-900">
+                        @if($ocorrencia->tera_falta)
+                            Sim, {{ $ocorrencia->aulas_falta }} aula(s)
+                        @else
+                            Não
+                        @endif
+                    </p>
+                </div>
             </div>
 
             <div class="grid gap-4 sm:grid-cols-2">
@@ -103,6 +117,7 @@
                 <p class="text-sm font-semibold text-slate-900">Detalhes adicionais</p>
                 <div class="text-sm text-gray-600">
                     <p><span class="font-semibold text-slate-800">AQV:</span> {{ $ocorrencia->aqv?->name ?? '—' }}</p>
+                    <p><span class="font-semibold text-slate-800">Professor:</span> {{ $ocorrencia->professor?->name ?? '—' }}</p>
                     <p><span class="font-semibold text-slate-800">Portaria:</span> {{ $ocorrencia->portaria?->name ?? '—' }}</p>
                     <p><span class="font-semibold text-slate-800">Notificações:</span> {{ $ocorrencia->notificacoes->count() }}</p>
                 </div>

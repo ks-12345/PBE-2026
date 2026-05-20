@@ -1,58 +1,160 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📚 Sistema Escolar
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistema web para gestão de **ocorrências escolares** (entrada atrasada e saída antecipada), com fluxo de aprovação entre perfis:
 
-## About Laravel
+- AQV
+- Portaria
+- Professores
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 📌 Visão Geral
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+O Sistema Escolar centraliza o controle de ocorrências de alunos, garantindo um fluxo organizado de validação, aprovação e notificação entre setores da escola.
 
-## Learning Laravel
+O sistema trabalha com **controle por perfis (roles)** e um fluxo hierárquico de decisões.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+---
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 🔄 Fluxo de Dados do Sistema
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+O fluxo de dados representa o ciclo completo de uma ocorrência dentro do sistema.
 
-## Agentic Development
+### 1. Registro da Ocorrência (AQV)
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+A AQV cria uma ocorrência vinculada a um aluno.
 
-```bash
-composer require laravel/boost --dev
+Dados registrados:
 
-php artisan boost:install
-```
+- aluno_id
+- tipo da ocorrência:
+  - entrada atrasada
+  - saída antecipada
+- data e hora
+- status inicial: `pendente`
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+### 2. Validação da AQV
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+A AQV analisa a solicitação e decide:
 
-## Code of Conduct
+- ✔ Aprovar → status: `aprovado`
+- ✖ Negar → status: `negado`
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Somente ocorrências aprovadas seguem no fluxo.
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 3. Distribuição Automática de Dados
 
-## License
+Quando a ocorrência é aprovada:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- O sistema gera notificações automaticamente
+- Portaria recebe a notificação
+- Professores recebem a notificação
+- O processo ocorre via eventos internos do sistema
+
+---
+
+### 4. Processamento na Portaria
+
+A Portaria:
+
+- Confirma a entrada ou saída do aluno
+- Valida a liberação física
+- Registra a confirmação no sistema
+
+---
+
+### 5. Visualização pelos Professores
+
+Os professores:
+
+- Apenas visualizam notificações
+- Não podem alterar dados
+- Acompanham ocorrências aprovadas
+
+---
+
+## 🧠 Modelo de Dados
+
+### users
+- name
+- email
+- password
+- role (`aqv`, `portaria`, `professor`)
+
+### alunos
+- nome
+- RM
+- turma
+- curso
+- responsável
+- status
+
+### ocorrencias
+- aluno_id
+- tipo
+- status (`pendente`, `aprovado`, `negado`)
+- data/hora
+
+### notificacoes
+- user_id
+- mensagem
+- ocorrência vinculada
+
+---
+
+## 🔐 Regras de Negócio
+
+- Apenas AQV pode criar ocorrências
+- Apenas AQV pode aprovar ou negar ocorrências
+- Portaria apenas confirma liberações físicas
+- Professores apenas visualizam dados
+- Toda ocorrência aprovada gera notificação automática
+
+---
+
+## 🔄 Fluxo Resumido
+
+1. AQV registra ocorrência
+2. AQV aprova ou nega
+3. Se aprovado:
+   - Sistema envia notificações
+   - Portaria recebe liberação
+   - Professores recebem aviso
+4. Portaria confirma liberação física
+
+---
+
+## 🎯 Objetivo do Sistema
+
+- Centralizar o controle de entradas e saídas
+- Evitar inconsistências manuais
+- Garantir rastreabilidade total
+- Integrar setores da escola em um fluxo único
+
+---
+
+## 📦 Tecnologias
+
+- PHP 8.3+
+- Laravel
+- Tailwind CSS
+- Vite
+- Alpine.js
+- SQLite / MySQL
+
+---
+
+## 📌 Estrutura do Fluxo
+
+```txt
+AQV → cria ocorrência → pendente
+AQV → aprova/nega
+    ↓
+Se aprovado:
+    → Notificação automática
+    → Portaria (confirmação física)
+    → Professores (visualização)

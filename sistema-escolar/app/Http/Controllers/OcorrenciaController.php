@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
  
 use App\Models\Aluno;
 use App\Models\Ocorrencia;
+use App\Models\User;
 use App\Http\Requests\OcorrenciaRequest;
 use App\Services\OcorrenciaService;
 use Illuminate\Http\Request;
@@ -65,8 +66,9 @@ class OcorrenciaController extends Controller
         }
  
         $alunos = Aluno::where('ativo', true)->orderBy('nome')->get();
+        $professores = User::where('role', 'professor')->orderBy('name')->get();
  
-        return view('ocorrencias.create', compact('alunos'));
+        return view('ocorrencias.create', compact('alunos', 'professores'));
     }
  
     public function store(OcorrenciaRequest $request)
@@ -85,7 +87,7 @@ class OcorrenciaController extends Controller
  
     public function show(Ocorrencia $ocorrencia)
     {
-        $ocorrencia->load('aluno', 'aqv', 'portaria', 'notificacoes.usuario');
+        $ocorrencia->load('aluno', 'aqv', 'portaria', 'professor', 'notificacoes.usuario');
  
         return view('ocorrencias.show', compact('ocorrencia'));
     }
