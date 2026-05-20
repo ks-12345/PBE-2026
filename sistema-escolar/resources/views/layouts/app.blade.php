@@ -7,12 +7,12 @@
     <title>@yield('title', 'Sistema Escolar') — {{ config('app.name') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="h-full bg-gray-50 font-sans antialiased">
+<body class="h-full font-sans antialiased overflow-hidden">
  
     <div class="min-h-screen flex">
  
         {{-- SIDEBAR --}}
-        <aside class="w-64 bg-slate-900 text-white flex flex-col fixed inset-y-0 left-0 z-50">
+        <aside class="sidebar w-72 text-white flex flex-col fixed inset-y-0 left-0 z-50">
             {{-- Logo --}}
             <div class="flex items-center gap-3 px-6 py-5 border-b border-slate-700">
                 <div class="w-9 h-9 bg-blue-500 rounded-lg flex items-center justify-center">
@@ -111,10 +111,10 @@
         </aside>
  
         {{-- CONTEÚDO PRINCIPAL --}}
-        <main class="ml-64 flex-1 flex flex-col min-h-screen">
+        <main class="ml-72 flex-1 flex flex-col min-h-screen">
             {{-- Topbar --}}
-            <header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between sticky top-0 z-40">
-                <h1 class="text-lg font-semibold text-gray-800">@yield('page-title', 'Dashboard')</h1>
+            <header class="topbar flex items-center justify-between">
+                <h1 class="topbar-title">@yield('page-title', 'Dashboard')</h1>
                 <div class="flex items-center gap-3 text-sm text-gray-500">
                     <span>{{ now()->format('d/m/Y H:i') }}</span>
                 </div>
@@ -123,7 +123,7 @@
             {{-- Flash messages --}}
             <div class="px-6 pt-4">
                 @if(session('success'))
-                    <div class="mb-4 px-4 py-3 bg-green-50 border border-green-200 text-green-700 rounded-lg flex items-center gap-2">
+                    <div class="alert-success mb-4 fade-in">
                         <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
@@ -132,7 +132,7 @@
                 @endif
  
                 @if(session('error'))
-                    <div class="mb-4 px-4 py-3 bg-red-50 border border-red-200 text-red-700 rounded-lg flex items-center gap-2">
+                    <div class="alert-error mb-4 fade-in">
                         <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
                         </svg>
@@ -142,32 +142,14 @@
             </div>
  
             {{-- Página --}}
-            <div class="flex-1 px-6 pb-6">
+            <div class="flex-1 overflow-y-auto px-8 py-6">
                 @yield('content')
             </div>
         </main>
     </div>
  
-    <style>
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.5rem 0.75rem;
-            border-radius: 0.75rem;
-            font-size: 0.875rem;
-            color: #94a3b8;
-            transition: color 0.2s ease, background-color 0.2s ease;
-        }
-        .nav-link:hover {
-            color: #ffffff;
-            background-color: #0f172a;
-        }
-        .nav-link.active {
-            background-color: #2563eb;
-            color: #ffffff;
-        }
-    </style>
+    
+
  
     <script>
         // Atualizar badge de notificações a cada 30 segundos
